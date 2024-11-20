@@ -8,45 +8,40 @@
 const { ccclass, property } = cc._decorator;
 
 @ccclass
-export default class NewClass extends cc.Component {
+export default class WheelSpinner extends cc.Component {
     @property(cc.Node)
     wheelNode: cc.Node = null;
+    @property(cc.Node)
+    scoreNode: cc.Node = null;
+    @property totalSections=8;
+    @property offset=-22.5;
+    @property desired=0;
+    @property({ type: cc.Integer, range: [0, 5, 1] })
+    stopTime: number = 2;
+    score=0;
+    
 
     // LIFE-CYCLE CALLBACKS:
 
     // onLoad () {}
 
     start() {
-
+        
     }
     onButtonClick() {
-        this.startAnimation(-0.5);
-
+        this.startAnimation();
     }
-    // private startAnimation(){
-    //     // let randomNumber=Math.floor(Math.random()*8+1);
-    //     let randomNumber=Math.random();
-    //     cc.log("Random Number: "+randomNumber);
-    //     cc.tween(this.wheelNode)
-    //         .by(4,{angle:360*randomNumber*5})
-    //         .call(()=>this.calculateResult())
-    //         .start();       
-    //     }
-    private startAnimation(targetIndex: number) {
-        const totalSections = 8; // Number of sections on the wheel
-        const sectionAngle = 360 / totalSections; // Each section spans 45 degrees
-        const offset = -22.5; // Adjust for the initial position (top section at -22.5 degrees)
-
-        // Calculate the target angle for the desired index
-        const baseAngle = targetIndex * sectionAngle; // Target section angle
-        const targetAngle = 360 * 5 - offset + baseAngle; // Add multiple full rotations (5 spins)
-
-        // Animate the wheel
+    private startAnimation(){
+        // let randomNumber=Math.floor(Math.random()*8+1);
+        let randomNumber=Math.random();
+        cc.log("Random Number: "+randomNumber);
+        const randDuration = Math.floor(Math.random() * 5 + this.stopTime);
         cc.tween(this.wheelNode)
-            .to(4, { angle: targetAngle }, { easing: "quartOut" }) // Use easing for smooth deceleration
-            .call(() => this.calculateResult())
-            .start();
-    }
+            .by(randDuration,{angle:360*randomNumber*5}, { easing: "quartOut" })
+            .call(()=>this.calculateResult())
+            .start();       
+        }
+     
 
     private calculateResult() {
         // Get the current rotation angle of the wheel
@@ -74,11 +69,22 @@ export default class NewClass extends cc.Component {
         if (index >= 8) {
             index = 0;
         }
+        this.countScore(index);
 
         // Display or handle the result
         cc.log("Normalized Angle: " + normalizedAngle);
         cc.log("Adjusted Angle: " + adjustedAngle);
         cc.log("The wheel stopped at index: " + index);
+    }
+    private countScore(index: number){
+        let scoreIndex = index;
+        if(this.scoreNode.getComponent(cc.Label).string==="$0"){
+            this.score = parseInt(this.wheelNode.getComponentsInChildren(cc.Label)[scoreIndex].string);
+        }else{
+            let tempScore = parseInt(this.wheelNode.getComponentsInChildren(cc.Label)[scoreIndex].string);
+            this.score+=tempScore;
+        }
+        this.scoreNode.getComponent(cc.Label).string="$ "+this.score;
     }
 
     // update (dt) {}
