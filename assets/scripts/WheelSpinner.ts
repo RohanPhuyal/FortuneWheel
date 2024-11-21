@@ -20,6 +20,8 @@ export default class WheelSpinner extends cc.Component {
     @property(cc.Node)
     playButton: cc.Node = null;
     @property(cc.Node)
+    exitButton: cc.Node = null;
+    @property(cc.Node)
     freeSpin: cc.Node = null;
     @property totalSections = 8;
     @property offset = -22.5;
@@ -31,16 +33,46 @@ export default class WheelSpinner extends cc.Component {
 
     private currentGameState: GameState = GameState.Start; // Initial game state
 
-    
+    private sceneManagerController: any = null;
+
+
+    @property([cc.String]) wheelValues: string[] = ["1", "2", "3", "4", "5", "6", "7", "Jackpot"];
 
     // LIFE-CYCLE CALLBACKS:
 
-    // onLoad () {}
+    onLoad() {
+        this.randomizeWheelValues();
+    }
 
     start() {
-        this.updatePlayButtonState();
+        this.updateButtonsState();
     }
-    onButtonClick() {
+
+    private randomizeWheelValues() {
+        // Fisher-Yates Sorting Algorithm
+        const shuffle = (array: string[]) => {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        };
+        const shuffledValues = shuffle(this.wheelValues);
+        cc.log("Shuffled Array: " + shuffledValues);
+
+        // Get child nodes
+        const childNodes = this.wheelNode.children;
+
+        // Assign shuffled values to each child
+        for (let i = 0; i < childNodes.length; i++) {
+            const labelComponent = childNodes[i].getComponent(cc.Label);
+            if (labelComponent) {
+                labelComponent.string = shuffledValues[i];
+            }
+        }
+    }
+
+    onSpinButtonClick() {
         cc.log("clicked spin button");
         //gaurd clause
         if (this.currentGameState === GameState.Spinning)
@@ -53,7 +85,7 @@ export default class WheelSpinner extends cc.Component {
     }
     private startAnimation() {
         this.currentGameState = GameState.Spinning; // Set game state to Spinning
-        this.updatePlayButtonState(); // Disable the play button
+        this.updateButtonsState(); // Disable the play/exit button
         // let randomNumber=Math.floor(Math.random()*8+1);
         let randomNumber = Math.random();
         // cc.log("Random Number: " + randomNumber);
@@ -93,7 +125,7 @@ export default class WheelSpinner extends cc.Component {
         }
 
         this.currentGameState = GameState.End; // Set game state to End
-        this.updatePlayButtonState(); // Re-enable the play button
+        this.updateButtonsState(); // Re-enable the play/exit button
         this.countScore(index);
 
 
@@ -105,35 +137,39 @@ export default class WheelSpinner extends cc.Component {
     private countScore(index: number) {
         let scoreIndex = index;
         if (this.scoreNode.getComponent(cc.Label).string === "$0") {
-            this.score = parseInt(this.wheelNode.getComponentsInChildren(cc.Label)[scoreIndex].string);
+            if (this.wheelNode.getComponentsInChildren(cc.Label)[scoreIndex].string == "Jackpot") {
+                this.freeSpinWin();
+            } else {
+                this.score = parseInt(this.wheelNode.getComponentsInChildren(cc.Label)[scoreIndex].string);
+            }
         } else {
-            let tempScore = parseInt(this.wheelNode.getComponentsInChildren(cc.Label)[scoreIndex].string);
-            this.score += tempScore;
+            if (this.wheelNode.getComponentsInChildren(cc.Label)[scoreIndex].string == "Jackpot") {
+                this.freeSpinWin();
+            } else {
+                let tempScore = parseInt(this.wheelNode.getComponentsInChildren(cc.Label)[scoreIndex].string);
+                this.score += tempScore;
+            }
         }
         this.scoreNode.getComponent(cc.Label).string = "$ " + this.score;
 
-        // Check if score crosses the next multiple of 20
-        if (this.score >= this.lastMilestone + 20) {
-            this.lastMilestone += 20; // Update the milestone
-            this.freeSpinWin();
-            // Handle milestone logic
-        }
     }
 
-    private updatePlayButtonState() {
+    private updateButtonsState() {
         cc.log("GameState: " + this.currentGameState);
         if (this.playButton) {
             if (this.currentGameState === GameState.Start || this.currentGameState === GameState.End) {
                 this.playButton.getComponent(cc.Button).interactable = true;
+                this.exitButton.getComponent(cc.Button).interactable = true;
             } else {
                 this.playButton.getComponent(cc.Button).interactable = false;
+                this.exitButton.getComponent(cc.Button).interactable = false;
             }
         }
     }
 
     private freeSpinWin() {
         this.currentGameState = GameState.Spinning; // Set game state to Spinning
-        this.updatePlayButtonState(); // Disable the play button
+        this.updateButtonsState(); // Disable the play.exit button
         this.freeSpin.active = true;
         this.freeSpin.angle = 0; // Reset rotation
         this.freeSpin.scale = 1; // Reset scale to default
@@ -146,6 +182,16 @@ export default class WheelSpinner extends cc.Component {
     private finishFreeSpinAnimation() {
         this.freeSpin.active = false;
         this.startAnimation();
+    }
+
+    onExitButtonClick(){
+        this.currentGameState = GameState.Start; // Set game state to Start
+        this.updateButtonsState(); // Disable the play/exit button
+        // Find the SceneManager node
+        const sceneManagerNode = cc.find("Canvas/SceneManager");
+        this.sceneManagerController = sceneManagerNode.getComponent("SceneManagerController");
+        this.sceneManagerController.onGameExit();
+        cc.log("sceneManagerNode "+sceneManagerNode);
     }
 
     // update (dt) {}

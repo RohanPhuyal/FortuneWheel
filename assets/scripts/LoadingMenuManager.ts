@@ -5,34 +5,38 @@
 // Learn life-cycle callbacks:
 //  - https://docs.cocos.com/creator/manual/en/scripting/life-cycle-callbacks.html
 
-const {ccclass, property} = cc._decorator;
+
+const { ccclass, property } = cc._decorator;
 
 @ccclass
 export default class LoadingMenuManager extends cc.Component {
 
-    @property (cc.ProgressBar) progressBar: cc.ProgressBar = null;
-    @property (cc.Node) loadingText: cc.Node = null;
-    public loaded=false;
+    @property(cc.ProgressBar) progressBar: cc.ProgressBar = null;
+    @property(cc.Node) loadingText: cc.Node = null;
+    private sceneManagerController: any = null;
     // LIFE-CYCLE CALLBACKS:
 
     // onLoad () {}
 
-    start () {
+    start() {
         this.startLoading();
     }
 
-    private startLoading(){
-        this.progressBar.progress=0;
-        let randDuration = Math.floor(Math.random()*3+1.5);
+    private startLoading() {
+        this.progressBar.progress = 0;
+        let randDuration = Math.floor(Math.random() * 3 + 1.5);
         cc.tween(this.progressBar)
-        .to(randDuration,{progress:0.4})
-        .delay(0.5)
-        .to(randDuration,{progress:1})
-        .call(()=>this.startGame())
-        .start();
+            .to(randDuration, { progress: 0.4 })
+            .delay(0.5)
+            .to(randDuration, { progress: 1 })
+            .call(() => this.startGame())
+            .start();
     }
-    private startGame(){
-        this.loaded=true;
+    private startGame() {
+        // Find the SceneManager node
+        const sceneManagerNode = cc.find("Canvas/SceneManager");
+        this.sceneManagerController = sceneManagerNode.getComponent("SceneManagerController");
+        this.sceneManagerController.onLoadingFinished();
     }
 
     // update (dt) {}

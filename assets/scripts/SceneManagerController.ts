@@ -16,22 +16,29 @@ export default class SceneManagerController extends cc.Component {
 
     private currentScene: cc.Node = null;
 
+
+
     // LIFE-CYCLE CALLBACKS:
 
     // onLoad () {}
 
     start() {
-
+        this.setupMainMenuScene();
+    }
+    
+    private setupMainMenuScene() {
         this.currentScene = cc.instantiate(this.mainMenuScene);
         this.node.addChild(this.currentScene);
-
+    
         const playButton = this.currentScene.getChildByName("PlayButton");
         if (playButton) {
             playButton.on("click", this.onPlayButtonClick, this);
         }
     }
+    
 
     private onPlayButtonClick() {
+        cc.log("Clicked Play Button from Main Menu");
 
         this.currentScene.removeFromParent();
         this.currentScene = null;
@@ -39,16 +46,29 @@ export default class SceneManagerController extends cc.Component {
         this.currentScene = cc.instantiate(this.loadingScene);
         this.node.addChild(this.currentScene);
     }
+    public onLoadingFinished() {
+        this.currentScene.removeFromParent();
+        this.currentScene = null;
 
-    update(dt) {
-        if (this.currentScene.getComponent("LoadingMenuManager")) {
-            if (this.currentScene.getComponent("LoadingMenuManager").loaded) {
-                this.currentScene.removeFromParent();
-                this.currentScene = null;
-
-                this.currentScene = cc.instantiate(this.gameScene);
-                this.node.addChild(this.currentScene);
-            }
-        }
+        this.currentScene = cc.instantiate(this.gameScene);
+        this.node.addChild(this.currentScene);
     }
+    public onGameExit() {
+        this.currentScene.removeFromParent();
+        this.currentScene = null;
+    
+        this.setupMainMenuScene();
+    }
+
+    // update(dt) {
+    //     if (this.currentScene.getComponent("LoadingMenuManager")) {
+    //         if (this.currentScene.getComponent("LoadingMenuManager").loaded) {
+    //             this.currentScene.removeFromParent();
+    //             this.currentScene = null;
+
+    //             this.currentScene = cc.instantiate(this.gameScene);
+    //             this.node.addChild(this.currentScene);
+    //         }
+    //     }
+    // }
 }
