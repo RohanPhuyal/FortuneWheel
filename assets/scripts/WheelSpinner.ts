@@ -7,18 +7,30 @@
 
 const { ccclass, property } = cc._decorator;
 
+enum GameState {
+    Start, Spinning, End
+}
+
 @ccclass
 export default class WheelSpinner extends cc.Component {
     @property(cc.Node)
     wheelNode: cc.Node = null;
     @property(cc.Node)
     scoreNode: cc.Node = null;
-    @property totalSections=8;
-    @property offset=-22.5;
-    @property desired=0;
+    @property(cc.Node)
+    playButton: cc.Node = null;
+    @property(cc.Node)
+    freeSpin: cc.Node = null;
+    @property totalSections = 8;
+    @property offset = -22.5;
+    @property desired = 0;
     @property({ type: cc.Integer, range: [0, 5, 1] })
-    stopTime: number = 2;
-    score=0;
+    stopTime: number = 1;
+    score = 0;
+    private lastMilestone: number = 0; // Tracks the last milestone score
+
+    private currentGameState: GameState = GameState.Start; // Initial game state
+
     
 
     // LIFE-CYCLE CALLBACKS:
@@ -26,22 +38,32 @@ export default class WheelSpinner extends cc.Component {
     // onLoad () {}
 
     start() {
-        
+        this.updatePlayButtonState();
     }
     onButtonClick() {
-        this.startAnimation();
-    }
-    private startAnimation(){
-        // let randomNumber=Math.floor(Math.random()*8+1);
-        let randomNumber=Math.random();
-        cc.log("Random Number: "+randomNumber);
-        const randDuration = Math.floor(Math.random() * 5 + this.stopTime);
-        cc.tween(this.wheelNode)
-            .by(randDuration,{angle:360*randomNumber*5}, { easing: "quartOut" })
-            .call(()=>this.calculateResult())
-            .start();       
+        cc.log("clicked spin button");
+        //gaurd clause
+        if (this.currentGameState === GameState.Spinning)
+            return;
+
+        if (this.currentGameState === GameState.Start || this.currentGameState === GameState.End) {
+            this.startAnimation();
         }
-     
+
+    }
+    private startAnimation() {
+        this.currentGameState = GameState.Spinning; // Set game state to Spinning
+        this.updatePlayButtonState(); // Disable the play button
+        // let randomNumber=Math.floor(Math.random()*8+1);
+        let randomNumber = Math.random();
+        // cc.log("Random Number: " + randomNumber);
+        let randDuration = Math.floor(Math.random() * 5 + this.stopTime);
+        cc.tween(this.wheelNode)
+            .by(randDuration, { angle: 360 * randomNumber * 5 }, { easing: "quartOut" })
+            .call(() => this.calculateResult())
+            .start();
+    }
+
 
     private calculateResult() {
         // Get the current rotation angle of the wheel
@@ -69,22 +91,61 @@ export default class WheelSpinner extends cc.Component {
         if (index >= 8) {
             index = 0;
         }
+
+        this.currentGameState = GameState.End; // Set game state to End
+        this.updatePlayButtonState(); // Re-enable the play button
         this.countScore(index);
 
-        // Display or handle the result
-        cc.log("Normalized Angle: " + normalizedAngle);
-        cc.log("Adjusted Angle: " + adjustedAngle);
-        cc.log("The wheel stopped at index: " + index);
+
+        // Display the result
+        // cc.log("Normalized Angle: " + normalizedAngle);
+        // cc.log("Adjusted Angle: " + adjustedAngle);
+        // cc.log("The wheel stopped at index: " + index);
     }
-    private countScore(index: number){
+    private countScore(index: number) {
         let scoreIndex = index;
-        if(this.scoreNode.getComponent(cc.Label).string==="$0"){
+        if (this.scoreNode.getComponent(cc.Label).string === "$0") {
             this.score = parseInt(this.wheelNode.getComponentsInChildren(cc.Label)[scoreIndex].string);
-        }else{
+        } else {
             let tempScore = parseInt(this.wheelNode.getComponentsInChildren(cc.Label)[scoreIndex].string);
-            this.score+=tempScore;
+            this.score += tempScore;
         }
-        this.scoreNode.getComponent(cc.Label).string="$ "+this.score;
+        this.scoreNode.getComponent(cc.Label).string = "$ " + this.score;
+
+        // Check if score crosses the next multiple of 20
+        if (this.score >= this.lastMilestone + 20) {
+            this.lastMilestone += 20; // Update the milestone
+            this.freeSpinWin();
+            // Handle milestone logic
+        }
+    }
+
+    private updatePlayButtonState() {
+        cc.log("GameState: " + this.currentGameState);
+        if (this.playButton) {
+            if (this.currentGameState === GameState.Start || this.currentGameState === GameState.End) {
+                this.playButton.getComponent(cc.Button).interactable = true;
+            } else {
+                this.playButton.getComponent(cc.Button).interactable = false;
+            }
+        }
+    }
+
+    private freeSpinWin() {
+        this.currentGameState = GameState.Spinning; // Set game state to Spinning
+        this.updatePlayButtonState(); // Disable the play button
+        this.freeSpin.active = true;
+        this.freeSpin.angle = 0; // Reset rotation
+        this.freeSpin.scale = 1; // Reset scale to default
+        cc.tween(this.freeSpin)
+            .by(2, { angle: 360, scale: 1 }, { easing: "quartOut" })
+            .call(() => this.finishFreeSpinAnimation())
+            .start();
+    }
+
+    private finishFreeSpinAnimation() {
+        this.freeSpin.active = false;
+        this.startAnimation();
     }
 
     // update (dt) {}

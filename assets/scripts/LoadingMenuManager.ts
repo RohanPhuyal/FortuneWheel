@@ -23,8 +23,11 @@ export default class LoadingMenuManager extends cc.Component {
 
     private startLoading(){
         this.progressBar.progress=0;
+        let randDuration = Math.floor(Math.random()*3+1.5);
         cc.tween(this.progressBar)
-        .to(3,{progress:1})
+        .to(randDuration,{progress:0.4})
+        .delay(0.5)
+        .to(randDuration,{progress:1})
         .call(()=>this.startGame())
         .start();
     }
