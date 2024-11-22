@@ -37,16 +37,22 @@
       },
       {
         "__id__": 55
+      },
+      {
+        "__id__": 66
+      },
+      {
+        "__id__": 69
       }
     ],
     "_active": true,
     "_components": [
       {
-        "__id__": 66
+        "__id__": 72
       }
     ],
     "_prefab": {
-      "__id__": 67
+      "__id__": 73
     },
     "_opacity": 255,
     "_color": {
@@ -332,8 +338,8 @@
       "__type__": "TypedArray",
       "ctor": "Float64Array",
       "array": [
-        -1,
-        140.006,
+        -2.504,
+        138.502,
         0,
         0,
         0,
@@ -440,8 +446,8 @@
       "__type__": "TypedArray",
       "ctor": "Float64Array",
       "array": [
-        110.178,
-        108.822,
+        108.674,
+        110.326,
         0,
         0,
         0,
@@ -548,8 +554,8 @@
       "__type__": "TypedArray",
       "ctor": "Float64Array",
       "array": [
-        158.988,
-        -2.356,
+        148.462,
+        0.651,
         0,
         0,
         0,
@@ -656,8 +662,8 @@
       "__type__": "TypedArray",
       "ctor": "Float64Array",
       "array": [
-        130.516,
-        -123.025,
+        109.206,
+        -105.266,
         0,
         0,
         0,
@@ -765,7 +771,7 @@
       "ctor": "Float64Array",
       "array": [
         -3.711,
-        -173.191,
+        -144.777,
         0,
         0,
         0,
@@ -872,8 +878,8 @@
       "__type__": "TypedArray",
       "ctor": "Float64Array",
       "array": [
-        -125.736,
-        -129.804,
+        -113.305,
+        -113.821,
         0,
         0,
         0,
@@ -980,8 +986,8 @@
       "__type__": "TypedArray",
       "ctor": "Float64Array",
       "array": [
-        -159.632,
-        -13.202,
+        -154.304,
+        -0.771,
         0,
         0,
         0,
@@ -1088,8 +1094,8 @@
       "__type__": "TypedArray",
       "ctor": "Float64Array",
       "array": [
-        -114.89,
-        97.976,
+        -102.459,
+        101.528,
         0,
         0,
         0,
@@ -2491,6 +2497,222 @@
     "sync": false
   },
   {
+    "__type__": "cc.Node",
+    "_name": "NoCashPopup",
+    "_objFlags": 0,
+    "_parent": {
+      "__id__": 1
+    },
+    "_children": [],
+    "_active": false,
+    "_components": [
+      {
+        "__id__": 67
+      }
+    ],
+    "_prefab": {
+      "__id__": 68
+    },
+    "_opacity": 255,
+    "_color": {
+      "__type__": "cc.Color",
+      "r": 255,
+      "g": 70,
+      "b": 70,
+      "a": 255
+    },
+    "_contentSize": {
+      "__type__": "cc.Size",
+      "width": 329.1,
+      "height": 50.4
+    },
+    "_anchorPoint": {
+      "__type__": "cc.Vec2",
+      "x": 0.5,
+      "y": 0.5
+    },
+    "_trs": {
+      "__type__": "TypedArray",
+      "ctor": "Float64Array",
+      "array": [
+        628.74,
+        466.372,
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    "_eulerAngles": {
+      "__type__": "cc.Vec3",
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "_skewX": 0,
+    "_skewY": 0,
+    "_is3DNode": false,
+    "_groupIndex": 0,
+    "groupIndex": 0,
+    "_id": ""
+  },
+  {
+    "__type__": "cc.Label",
+    "_name": "",
+    "_objFlags": 0,
+    "node": {
+      "__id__": 66
+    },
+    "_enabled": true,
+    "_materials": [
+      {
+        "__uuid__": "eca5d2f2-8ef6-41c2-bbe6-f9c79d09c432"
+      }
+    ],
+    "_srcBlendFactor": 770,
+    "_dstBlendFactor": 771,
+    "_string": "Cash not available",
+    "_N$string": "Cash not available",
+    "_fontSize": 40,
+    "_lineHeight": 40,
+    "_enableWrapText": true,
+    "_N$file": null,
+    "_isSystemFontUsed": true,
+    "_spacingX": 0,
+    "_batchAsBitmap": false,
+    "_styleFlags": 0,
+    "_underlineHeight": 0,
+    "_N$horizontalAlign": 1,
+    "_N$verticalAlign": 1,
+    "_N$fontFamily": "Arial",
+    "_N$overflow": 0,
+    "_N$cacheMode": 0,
+    "_id": ""
+  },
+  {
+    "__type__": "cc.PrefabInfo",
+    "root": {
+      "__id__": 1
+    },
+    "asset": {
+      "__id__": 0
+    },
+    "fileId": "fd5erf8oZLKZa5ouXk5k71",
+    "sync": false
+  },
+  {
+    "__type__": "cc.Node",
+    "_name": "WinPopup",
+    "_objFlags": 0,
+    "_parent": {
+      "__id__": 1
+    },
+    "_children": [],
+    "_active": false,
+    "_components": [
+      {
+        "__id__": 70
+      }
+    ],
+    "_prefab": {
+      "__id__": 71
+    },
+    "_opacity": 255,
+    "_color": {
+      "__type__": "cc.Color",
+      "r": 0,
+      "g": 255,
+      "b": 10,
+      "a": 255
+    },
+    "_contentSize": {
+      "__type__": "cc.Size",
+      "width": 45.61,
+      "height": 50.4
+    },
+    "_anchorPoint": {
+      "__type__": "cc.Vec2",
+      "x": 0.5,
+      "y": 0.5
+    },
+    "_trs": {
+      "__type__": "TypedArray",
+      "ctor": "Float64Array",
+      "array": [
+        632.194,
+        431.826,
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    "_eulerAngles": {
+      "__type__": "cc.Vec3",
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "_skewX": 0,
+    "_skewY": 0,
+    "_is3DNode": false,
+    "_groupIndex": 0,
+    "groupIndex": 0,
+    "_id": ""
+  },
+  {
+    "__type__": "cc.Label",
+    "_name": "",
+    "_objFlags": 0,
+    "node": {
+      "__id__": 69
+    },
+    "_enabled": true,
+    "_materials": [
+      {
+        "__uuid__": "eca5d2f2-8ef6-41c2-bbe6-f9c79d09c432"
+      }
+    ],
+    "_srcBlendFactor": 770,
+    "_dstBlendFactor": 771,
+    "_string": "+1",
+    "_N$string": "+1",
+    "_fontSize": 40,
+    "_lineHeight": 40,
+    "_enableWrapText": true,
+    "_N$file": null,
+    "_isSystemFontUsed": true,
+    "_spacingX": 0,
+    "_batchAsBitmap": false,
+    "_styleFlags": 0,
+    "_underlineHeight": 0,
+    "_N$horizontalAlign": 1,
+    "_N$verticalAlign": 1,
+    "_N$fontFamily": "Arial",
+    "_N$overflow": 0,
+    "_N$cacheMode": 0,
+    "_id": ""
+  },
+  {
+    "__type__": "cc.PrefabInfo",
+    "root": {
+      "__id__": 1
+    },
+    "asset": {
+      "__id__": 0
+    },
+    "fileId": "f5rItqsylH/KzPog1ydJwP",
+    "sync": false
+  },
+  {
     "__type__": "32de9hGf+BITaeJ2SFeBEHd",
     "_name": "",
     "_objFlags": 0,
@@ -2513,10 +2735,20 @@
     "freeSpin": {
       "__id__": 49
     },
+    "noCashPopup": {
+      "__id__": 66
+    },
+    "winPopup": {
+      "__id__": 69
+    },
     "totalSections": 8,
     "offset": -22.5,
     "desired": 0,
-    "stopTime": 2,
+    "minSpinTimeWheel": 1,
+    "maxSpinTimeWheel": 5,
+    "minSpinAngle": 360,
+    "maxSpinAngle": 3600,
+    "cash": 10,
     "wheelValues": [
       "1",
       "2",
