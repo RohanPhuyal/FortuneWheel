@@ -4813,7 +4813,7 @@
     "maxSpinAngle": 3600,
     "minSpin": 4,
     "maxSpin": 6,
-    "spinAcceleration": 14,
+    "spinAcceleration": 16,
     "cash": 10,
     "targetAmount": {
       "__id__": 123

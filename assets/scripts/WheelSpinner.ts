@@ -1,7 +1,7 @@
 const { ccclass, property } = cc._decorator;
 
 enum GameState {
-    Start, Spinning, SetStop, End, CalculateResult
+    Start, Spinning, SetStop, End, Jackpot, CalculatingResult
 }
 
 @ccclass
@@ -125,7 +125,7 @@ export default class WheelSpinner extends cc.Component {
         this.wheelNode.angle += this.spinAcceleration;
     }
     timeElapsed = 0;
-    decelerationTime = 1;
+    decelerationTime = 1.5;
     easeOutStarted = false;
     easeAcceleration = this.spinAcceleration;
     startAngle;
@@ -141,6 +141,7 @@ export default class WheelSpinner extends cc.Component {
             while (this.targetAngle < this.startAngle) {
                 this.targetAngle += 360; // Add 360 to move it forward
             }
+            this.targetAngle += 360;
     
             this.timeElapsed = 0;
             this.progress = 0;
@@ -272,7 +273,7 @@ export default class WheelSpinner extends cc.Component {
     // }
 
     private calculateResult() {
-        this.currentGameState = GameState.End; // Set game state to Spinning
+        this.currentGameState = GameState.CalculatingResult; // Set game state to Spinning
         this.updateButtonsState(); // Disable the play/exit button=
         // Determine the section where the wheel stops and process the result
         let currentAngle = this.wheelNode.angle;
@@ -363,7 +364,11 @@ export default class WheelSpinner extends cc.Component {
                 this.playButton.getComponent(cc.Button).interactable = false;
                 this.exitButton.getComponent(cc.Button).interactable = false;
             }
-            if (this.currentGameState === GameState.CalculateResult) {
+            if (this.currentGameState === GameState.Jackpot) {
+                this.playButton.getComponent(cc.Button).interactable = false;
+                this.exitButton.getComponent(cc.Button).interactable = false;
+            }
+            if (this.currentGameState === GameState.CalculatingResult) {
                 this.playButton.getComponent(cc.Button).interactable = false;
                 this.exitButton.getComponent(cc.Button).interactable = false;
             }
@@ -378,9 +383,23 @@ export default class WheelSpinner extends cc.Component {
             .by(1, { scale: 1 }, { easing: "quartOut" })
             .call(() => {
                 this.freeSpin.active = false;
-                this.currentGameState = GameState.Spinning; // Set game state to Spinning
+                this.currentGameState = GameState.Jackpot; // Set game state to Spinning
                 this.updateButtonsState(); // Disable the play/exit button=
+                this.startAnimation();
             })
+            .start();
+    }
+    private startAnimation() {
+        // let randomNumber=Math.floor(Math.random()*8+1);
+        let randomSpinAngle = this.getRandomValueBetween(this.minSpinAngle, this.maxSpinAngle);
+        // cc.log("Random Number: " + randomNumber);
+        let randomDuration = this.getRandomValueBetween(this.minSpinTimeWheel, this.maxSpinTimeWheel);
+        cc.log("Random Angle: " + randomSpinAngle + " \nRandom Duration: " + randomDuration)
+        cc.tween(this.wheelNode)
+            // .by(randomDuration, { angle: randomSpinAngle })
+            .by(randomDuration, { angle: randomSpinAngle }, { easing: "quartOut" })
+            // .repeatForever()
+            .call(() => this.calculateResult())
             .start();
     }
 
