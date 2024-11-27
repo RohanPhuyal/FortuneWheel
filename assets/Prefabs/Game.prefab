@@ -4813,7 +4813,8 @@
     "maxSpinAngle": 3600,
     "minSpin": 4,
     "maxSpin": 6,
-    "spinAcceleration": 16,
+    "minSpinAcceleration": 12,
+    "maxSpinAcceleration": 18,
     "cash": 10,
     "targetAmount": {
       "__id__": 123
@@ -4830,6 +4831,8 @@
     ],
     "minJackpotAmount": 2,
     "maxJackpotAmount": 7,
+    "minDecelerationTime": 2,
+    "maxDecelerationTime": 3,
     "_id": ""
   },
   {

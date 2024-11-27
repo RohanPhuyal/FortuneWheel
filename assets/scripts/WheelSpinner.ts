@@ -32,7 +32,9 @@ export default class WheelSpinner extends cc.Component {
     @property({ type: cc.Integer }) maxSpin: number = 6;
 
     //new-spin property
-    @property({ type: cc.Integer }) spinAcceleration: number = 8;
+    @property({ type: cc.Integer }) minSpinAcceleration: number = 12;
+    spinAcceleration: number = 1000;
+    @property({ type: cc.Integer }) maxSpinAcceleration: number = 18;
 
     // Player's cash and betting amount
     @property cash = 10; // Player's starting cash
@@ -49,6 +51,9 @@ export default class WheelSpinner extends cc.Component {
 
     @property({ type: cc.Integer }) minJackpotAmount: number = 2;
     @property({ type: cc.Integer }) maxJackpotAmount: number = 7;
+
+    @property({ type: cc.Integer }) minDecelerationTime = 2.5;
+    @property({ type: cc.Integer }) maxDecelerationTime = 3.5;
 
     onLoad() {
         this.randomizeWheelValues(); // Shuffle the wheel values on load
@@ -88,6 +93,7 @@ export default class WheelSpinner extends cc.Component {
     }
 
     onSpinButtonClick() {
+        this.spinAcceleration = this.getRandomValueBetween(this.minSpinAcceleration, this.maxSpinAcceleration);
         // Gaurd Clause
         if (this.currentGameState === GameState.Spinning) {
             this.onStopSpinButtonClick();
@@ -124,52 +130,95 @@ export default class WheelSpinner extends cc.Component {
         // cc.log("SPINNING");
         this.wheelNode.angle += this.spinAcceleration;
     }
+
+    // Variables for ease effect
     timeElapsed = 0;
-    decelerationTime = 1.5;
+    decelerationTime: number=2.5; // Dynamically calculated
     easeOutStarted = false;
     easeAcceleration = this.spinAcceleration;
-    startAngle;
-    targetAngle;
-    progress=0;
+    startAngle: number=0;
+    targetAngle: number=0;
+    progress = 0;
+
     private easeSpinningAnimation(dt) {
         if (!this.easeOutStarted) {
-            // Initialize easing variables
             this.startAngle = this.wheelNode.angle;
             this.targetAngle = this.getTargetAngle(this.targetAmount.string);
-    
-            // Ensure targetAngle is always ahead of startAngle in a clockwise direction
+
+            // Ensure the target is ahead for smooth deceleration
             while (this.targetAngle < this.startAngle) {
-                this.targetAngle += 360; // Add 360 to move it forward
+                this.targetAngle += 360;
             }
-            this.targetAngle += 360;
-    
+            this.targetAngle += 360;  // Extra spin for smooth stop
+            this.decelerationTime=this.getRandomValueBetween(this.minDecelerationTime,this.maxDecelerationTime);
             this.timeElapsed = 0;
-            this.progress = 0;
             this.easeOutStarted = true;
         }
-    
-        // Update time elapsed and progress
+
         this.timeElapsed += dt;
         this.progress = Math.min(this.timeElapsed / this.decelerationTime, 1);
-    
-        // Apply quadratic ease-out for smooth deceleration
-        const easedProgress = 1 - Math.pow(1 - this.progress, 2);
-    
-        // Interpolate between startAngle and targetAngle
+        const easedProgress = 1 - Math.pow(1 - this.progress, 3);  // Cubic ease-out
+
         const deltaAngle = this.targetAngle - this.startAngle;
-        const currentAngle = this.startAngle + easedProgress * deltaAngle;
-    
-        // Update wheelNode angle (normalized to 0–360 degrees)
-        this.wheelNode.angle = currentAngle % 360;
-    
-        // Check if easing is complete
+        this.wheelNode.angle = this.startAngle + easedProgress * deltaAngle;
+
         if (this.progress === 1) {
-            this.wheelNode.angle = this.targetAngle % 360; // Snap to target angle
+            this.wheelNode.angle = this.targetAngle % 360;
             this.easeOutStarted = false;
+            this.currentGameState = GameState.CalculatingResult;
             this.calculateResult();
         }
     }
-    
+
+
+    // //variables for ease effect
+    // timeElapsed = 0;
+    // decelerationTime = 1.5;
+    // easeOutStarted = false;
+    // easeAcceleration = this.spinAcceleration;
+    // startAngle: number;
+    // targetAngle: number;
+    // progress=0;
+    // private easeSpinningAnimation(dt) {
+    //     if (!this.easeOutStarted) {
+    //         // Initialize easing variables
+    //         this.startAngle = this.wheelNode.angle;
+    //         this.targetAngle = this.getTargetAngle(this.targetAmount.string);
+
+    //         // Ensure targetAngle is always ahead of startAngle in a clockwise direction
+    //         while (this.targetAngle < this.startAngle) {
+    //             this.targetAngle += 360; // Add 360 to move it forward
+    //         }
+    //         this.targetAngle += 360;
+
+    //         this.timeElapsed = 0;
+    //         this.progress = 0;
+    //         this.easeOutStarted = true;
+    //     }
+
+    //     // Update time elapsed and progress
+    //     this.timeElapsed += dt;
+    //     this.progress = Math.min(this.timeElapsed / this.decelerationTime, 1);
+
+    //     // Apply quadratic ease-out for smooth deceleration
+    //     const easedProgress = 1 - Math.pow(1 - this.progress, 2);
+
+    //     // Interpolate between startAngle and targetAngle
+    //     const deltaAngle = this.targetAngle - this.startAngle;
+    //     const currentAngle = this.startAngle + easedProgress * deltaAngle;
+
+    //     // Update wheelNode angle (normalized to 0–360 degrees)
+    //     this.wheelNode.angle = currentAngle ;
+    //     // this.wheelNode.angle = currentAngle % 360;
+
+    //     // Check if easing is complete
+    //     if (this.progress === 1) {
+    //         this.wheelNode.angle = this.targetAngle % 360; // Snap to target angle
+    //         this.easeOutStarted = false;
+    //         this.calculateResult();
+    //     }
+    // }
+
     // private easeSpinningAnimation(dt) {
 
     //     if (!this.easeOutStarted) {
@@ -225,23 +274,23 @@ export default class WheelSpinner extends cc.Component {
                 break;
             }
         }
-    
+
         // Calculate the angle per section
         const sectionAngle = 360 / this.totalSections;
-    
+
         // Calculate the base angle for the target section
         const baseAngle = targetIndex * sectionAngle;
-    
+
         // Add a random offset to the target angle (optional, but makes it feel more natural)
         const randomOffset = Math.random() * sectionAngle * 0.5; // Up to 50% of a section angle
         const adjustedTargetAngle = baseAngle + randomOffset;
-    
+
         // Normalize to 0–360 degrees for the final target angle
         const targetAngle = (this.offset + adjustedTargetAngle) % 360;
-    
+
         return targetAngle;
     }
-    
+
 
     // private getTargetAngle(targetIndex) {
     //     // Start the wheel animation to the target section
